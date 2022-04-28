@@ -27,7 +27,8 @@ RCT_EXPORT_METHOD(init:(RCTResponseSenderBlock)successCallback
         m_printer = [[NSObject alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNetPrinterConnectedNotification:) name:@"NetPrinterConnected" object:nil];
         // API MISUSE: <CBCentralManager> can only accept this command while in the powered on state
-        [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){}];
+        // [[PrinterSDK defaultPrinterSDK] scanPrintersWithCompletion:^(Printer* printer){}];
+        // [PrinterSDK defaultPrinterSDK];
         successCallback(@[@"Init successful"]);
     } @catch (NSException *exception) {
         errorCallback(@[@"No bluetooth adapter available"]);
@@ -58,6 +59,14 @@ RCT_EXPORT_METHOD(getDeviceList:(RCTResponseSenderBlock)successCallback
     }
 }
 
+RCT_EXPORT_METHOD(stopScanPrinters) {
+    @try {
+        [[PrinterSDK defaultPrinterSDK] stopScanPrinters];
+    } @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+}
+
 RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
                   success:(RCTResponseSenderBlock)successCallback
                   fail:(RCTResponseSenderBlock)errorCallback) {
@@ -71,7 +80,7 @@ RCT_EXPORT_METHOD(connectPrinter:(NSString *)inner_mac_address
                 *stop = YES;
             }
         }];
-        
+
         if (found) {
             [[PrinterSDK defaultPrinterSDK] connectBT:selectedPrinter];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"BLEPrinterConnected" object:nil];
@@ -90,7 +99,7 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
                   fail:(RCTResponseSenderBlock)errorCallback) {
     @try {
         !m_printer ? [NSException raise:@"Invalid connection" format:@"printRawData: Can't connect to printer"] : nil;
-        
+
         NSNumber* boldPtr = [options valueForKey:@"bold"];
         NSNumber* alignCenterPtr = [options valueForKey:@"center"];
 
@@ -100,16 +109,16 @@ RCT_EXPORT_METHOD(printRawData:(NSString *)text
         bold ? [[PrinterSDK defaultPrinterSDK] sendHex:@"1B2108"] : [[PrinterSDK defaultPrinterSDK] sendHex:@"1B2100"];
         alignCenter ? [[PrinterSDK defaultPrinterSDK] sendHex:@"1B6102"] : [[PrinterSDK defaultPrinterSDK] sendHex:@"1B6101"];
         [[PrinterSDK defaultPrinterSDK] printText:text];
-        
+
         NSNumber* beepPtr = [options valueForKey:@"beep"];
         NSNumber* cutPtr = [options valueForKey:@"cut"];
-        
+
         BOOL beep = (BOOL)[beepPtr intValue];
         BOOL cut = (BOOL)[cutPtr intValue];
-        
+
         beep ? [[PrinterSDK defaultPrinterSDK] beep] : nil;
         cut ? [[PrinterSDK defaultPrinterSDK] cutPaper] : nil;
-        
+
     } @catch (NSException *exception) {
         errorCallback(@[exception.reason]);
     }

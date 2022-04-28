@@ -109,6 +109,12 @@ export var BLEPrinter = {
             return RNBLEPrinter.getDeviceList(function (printers) { return resolve(printers); }, function (error) { return reject(error); });
         });
     },
+    stopScanPrinters: function () {
+        return new Promise(function (resolve) {
+            RNBLEPrinter.stopScanPrinters();
+            resolve();
+        });
+    },
     connectPrinter: function (inner_mac_address) {
         return new Promise(function (resolve, reject) {
             return RNBLEPrinter.connectPrinter(inner_mac_address, function (printer) { return resolve(printer); }, function (error) { return reject(error); });
@@ -213,7 +219,7 @@ export var NetPrinter = {
              });
          }
     },
-    
+
 
 };
 export var NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
