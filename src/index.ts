@@ -144,6 +144,11 @@ export const BLEPrinter = {
         (error: Error) => reject(error)
       )
     ),
+  stopScanPrinters: (): Promise<void> =>
+    new Promise((resolve) => {
+      RNBLEPrinter.stopScanPrinters();
+      resolve();
+    }),
 
   connectPrinter: (inner_mac_address: string): Promise<IBLEPrinter> =>
     new Promise((resolve, reject) =>
