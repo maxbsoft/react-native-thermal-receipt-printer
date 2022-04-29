@@ -38,7 +38,7 @@ RCT_EXPORT_METHOD(connectPrinter:(NSInteger)vendorId
     errorCallback(@[@"This function is not supported"]);
 }
 
-RCT_EXPORT_METHOD(printRawData:(NSString *)text
+RCT_EXPORT_METHOD(printRawData:(NSString *)hex
                   printerOptions:(NSDictionary *)options
                   fail:(RCTResponseSenderBlock)errorCallback) {
     // TODO
@@ -50,4 +50,3 @@ RCT_EXPORT_METHOD(closeConn) {
 }
 
 @end
-
